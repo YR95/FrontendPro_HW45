@@ -2,6 +2,12 @@ let category = [];
 let subcategory = [];
 let infos = [];
 let counter = 0;
+
+let divOrder = document.createElement("div");
+divOrder.id = "divOrder";
+let divOrderDet = document.createElement("div");
+divOrderDet.id = "divOrderDet";
+
 let items = [
   {
     idCategory: 0,
@@ -61,6 +67,7 @@ let selectedItemInCart = "";
 let resultObject = {};
 
 let allOrders = [];
+let allOrdersP = [];
 let ORDERS_LOCAL_STORAGE = "odersToLS";
 let ORDERS_LOCAL_STORAGE_REMOVE = "odersToLSRemove";
 
@@ -375,6 +382,65 @@ function addButtonMyOrders(div) {
   button.value = "History of orders";
   div.append(button);
 
+  // button.addEventListener("click", (ev) => {
+  //   clearBox(divFirst.id);
+  //   clearBox(divSecond.id);
+  //   clearBox(divThird.id);
+  //
+  //   allOrders = JSON.parse(localStorage.getItem(ORDERS_LOCAL_STORAGE)).map(
+  //       function (val) {
+  //         return val;
+  //
+  //       });
+  //   console.log("All orders from Local srorage");
+  //   console.log(allOrders);
+  //   let divOrder = document.createElement("div");
+  //   let divOrderDet = document.createElement("div");
+  //   divOrderDet.id = "divOrderDet";
+  //
+  //   for (let x in allOrders) {
+  //     let p = document.createElement("p");
+  //     p.innerText = `Date of oreder: ${allOrders[x].date},
+  //     Sum: ${allOrders[x].wholePrice} $`;
+  //
+  //     p.id = allOrders[x].date;
+  //     p.style.background = "aqua";
+  //     p.style.border = "solid 2px green";
+  //     p.style.padding = "5px";
+  //     divOrder.append(p);
+  //
+  //     p.addEventListener("click", () => {
+  //
+  //       document.body.append(divOrderDet);
+  //
+  //       document.querySelector("#divOrderDet").innerHTML = "";
+  //
+  //       for (let y in allOrders[x]) {
+  //         let p = document.createElement("p");
+  //         p.innerText = `${y}: ${allOrders[x][y]} `;
+  //         divOrderDet.append(p);
+  //         document.body.append(divOrderDet);
+  //       }
+  //     });
+  //
+  //     p.addEventListener("dblclick", (ev) => {
+  //       document.querySelector("#divOrderDet").innerHTML = "";
+  //       divOrder.innerText = "";
+  //
+  //       let orderId = "";
+  //       orderId = ev.target.innerText.slice(16, 40);
+  //       console.log(`Order id need to be removed: orderId: ${orderId}`);
+  //       removeOrderFromAllOrders(orderId);
+  //
+  //       console.log(allOrders);
+  //
+  //     });
+  //
+  //   }
+  //   document.body.append(divOrder);
+  //
+  // });
+
   button.addEventListener("click", (ev) => {
     clearBox(divFirst.id);
     clearBox(divSecond.id);
@@ -387,42 +453,86 @@ function addButtonMyOrders(div) {
         });
     console.log("All orders from Local srorage");
     console.log(allOrders);
-    let divOrder = document.createElement("div");
-    let divOrderDet = document.createElement("div");
-    divOrderDet.id = "divOrderDet";
+    renderTableOrder();
+    document.body.append(divOrder);
+    click();
+    doubleclick();
 
-    for (let x in allOrders) {
-      let p = document.createElement("p");
-      p.innerText = `Date of oreder: ${allOrders[x].date}, 
+  });
+
+}
+
+function renderTableOrder() {
+  for (let x in allOrders) {
+    let p = document.createElement("p");
+    p.innerText = `Date of oreder: ${allOrders[x].date}, 
       Sum: ${allOrders[x].wholePrice} $`;
-      p.style.background = "aqua";
-      p.style.border = "solid 2px green";
-      p.style.padding = "5px";
-      divOrder.append(p);
 
-      p.addEventListener("click", () => {
+    p.id = allOrders[x].date;
+    p.style.background = "aqua";
+    p.style.border = "solid 2px green";
+    p.style.padding = "5px";
+    divOrder.append(p);
 
-        document.body.append(divOrderDet);
+  }
+}
 
-        document.querySelector("#divOrderDet").innerHTML = "";
+function renderTableOrder2(p) {
+  p.style.display="none";
+  for (let x in allOrders) {
+    // let p = document.createElement("p");
+    p.innerText = `Date of oreder: ${allOrders[x].date}, 
+      Sum: ${allOrders[x].wholePrice} $`;
 
-        for (let y in allOrders[x]) {
-          let p = document.createElement("p");
-          p.innerText = `${y}: ${allOrders[x][y]} `;
-          divOrderDet.append(p);
-          document.body.append(divOrderDet);
+    p.id = allOrders[x].date;
+    p.style.background = "aqua";
+    p.style.border = "solid 2px green";
+    p.style.padding = "5px";
+    divOrder.append(p);
+
+  }
+}
+
+function click() {
+
+  document.querySelector("#divOrder").childNodes.forEach(e => {
+    e.addEventListener("click", (ev) => {
+      document.querySelector("#divOrderDet").innerHTML = "";
+
+      console.log(`selected order item:  ${ev.target.id}`);
+      let result = allOrders.filter(value => {
+        if (value.date === ev.target.id) {
+          return value;
         }
       });
+      let p = document.createElement("p");
+      for (let key in result[0]) {
+        p.innerHTML += " " + key + ":   " + result[0][key] + "<br>";
+        p.style.padding = "15px";
+        p.style.fontSize = "32px";
+      }
+      divOrderDet.append(p);
 
-      p.addEventListener("dblclick", (ev) => {
-        let orderId = ev.target.innerText.slice(16, 40);
-        console.log(`Order id need to be removed: orderId: ${orderId}`);
-        removeOrderFromAllOrders(orderId);
+    });
+    document.body.append(divOrderDet);
 
-      });
-    }
+  });
+}
 
-    document.body.append(divOrder);
+function doubleclick() {
+  document.querySelector("#divOrder").childNodes.forEach(e => {
+    e.addEventListener("dblclick", (ev) => {
+      document.querySelector("#divOrderDet").innerHTML = "";
+      divOrder.removeChild(e);
+
+      let orderId = ev.target.id;
+      console.log(`Order id need to be removed: orderId: ${orderId}`);
+      removeOrderFromAllOrders(orderId);
+      divOrder.style.color = "red";
+      renderTableOrder2(e);
+      console.log(allOrders);
+
+    });
   });
 }
 
@@ -434,11 +544,14 @@ function removeOrderFromAllOrders(orderId) {
   });
   console.log(result);
   //remove from allorders
-  allOrders.pop(result);
+  allOrders.map((value, index, array) => {
+    if (value === result[0]) {
+      array.splice(index, 1);
+    }
+  });
   console.log(allOrders);
   removOrderFromCartAddetoLocalStorage(result);
   console.log(localStorage.getItem(ORDERS_LOCAL_STORAGE_REMOVE));
-
 }
 
 function addToLocalStorage(item) {
@@ -493,4 +606,7 @@ parseData(items);
 renderDivsBlocks();
 renderElemnts(category, divFirst, "category");
 addButtonMyOrders(divFirst);
+
+
+
 
