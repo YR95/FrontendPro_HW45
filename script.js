@@ -1,6 +1,7 @@
 let category = [];
 let subcategory = [];
 let infos = [];
+let counter = 0;
 let items = [
   {
     idCategory: 0,
@@ -61,6 +62,7 @@ let resultObject = {};
 
 let allOrders = [];
 let ORDERS_LOCAL_STORAGE = "odersToLS";
+let ORDERS_LOCAL_STORAGE_REMOVE = "odersToLSRemove";
 
 function addItemsToCategory(item, items) {
   items.push(item);
@@ -398,8 +400,6 @@ function addButtonMyOrders(div) {
       p.style.padding = "5px";
       divOrder.append(p);
 
-
-
       p.addEventListener("click", () => {
 
         document.body.append(divOrderDet);
@@ -413,10 +413,32 @@ function addButtonMyOrders(div) {
           document.body.append(divOrderDet);
         }
       });
+
+      p.addEventListener("dblclick", (ev) => {
+        let orderId = ev.target.innerText.slice(16, 40);
+        console.log(`Order id need to be removed: orderId: ${orderId}`);
+        removeOrderFromAllOrders(orderId);
+
+      });
     }
 
     document.body.append(divOrder);
   });
+}
+
+function removeOrderFromAllOrders(orderId) {
+  let result = allOrders.filter(value => {
+    if (value.date === orderId) {
+      return value;
+    }
+  });
+  console.log(result);
+  //remove from allorders
+  allOrders.pop(result);
+  console.log(allOrders);
+  removOrderFromCartAddetoLocalStorage(result);
+  console.log(localStorage.getItem(ORDERS_LOCAL_STORAGE_REMOVE));
+
 }
 
 function addToLocalStorage(item) {
@@ -425,6 +447,16 @@ function addToLocalStorage(item) {
       : [item];
   localStorage.setItem(ORDERS_LOCAL_STORAGE, JSON.stringify(updatedOrdersToLS));
 
+}
+
+//TODO:implement
+function removOrderFromCartAddetoLocalStorage(item) {
+  const removeodersToLS = localStorage.getItem(ORDERS_LOCAL_STORAGE_REMOVE);
+  const updatedOrdersToLS = removeodersToLS ? [item,
+        ...JSON.parse(removeodersToLS)]
+      : [item];
+  localStorage.setItem(ORDERS_LOCAL_STORAGE_REMOVE,
+      JSON.stringify(updatedOrdersToLS));
 }
 
 addItemsToCategory({
